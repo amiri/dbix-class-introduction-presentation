@@ -69,14 +69,14 @@
 <div class="presentation">
 
    <div class="slide">
-      <h1>DBIX::Class (aka DBIC)</h1>
+       <h1>DBIX::Class (aka DBIC)</h1>
       <h3>for (advanced) beginners</h3>
    </div>
 
    <div class="slide">
       <h1>Authors</h1>
       <h4>Originally Leo Lapworth @ LPW 2009</h4>
-      <h4>Matthew S. Trout</h4>
+      <h4>Amiri K. Barksdale</h4>
       <h4>Arthur Axel "fREW" Schmidt</h4>
       <h4>Justin D. Hunter</h4>
    </div>
@@ -136,14 +136,14 @@
    <div class="slide">
       <h1>example...</h1>
       <ul>
-         <li>Authors</li>
-         <li>Books</li>
+         <li>Author</li>
+         <li>Book</li>
       </ul>
    </div>
 
    <div class="slide">
-      <h1>authors table</h1>
-<pre>CREATE TABLE authors(
+      <h1>author table</h1>
+<pre>CREATE TABLE author(
    id   int(8) primary key auto_increment,
    name varchar(255)
 ) engine = InnoDB DEFAULT CHARSET=utf8;</pre>
@@ -151,26 +151,25 @@
 
    <div class="slide">
       <h1>tips</h1>
-      <p>Name tables as simple plurals (<strong>add an S</strong>) - makes relationships easier to understand</p>
-      <p>(issue: Matt Trout "Tables should not be plural as gives you plurals for Result:: package names which represent a single row" - talk may be rewritten in future to reflect this as this is better once you understand the relationship setup - either way, consistency is important)</p>
+      <p>Name tables as simple singulars (do <strong>not</strong> add an S to author) - makes your resultset classes easier to understand later.</p>
       <p>Use a character set (<strong>UTF8</strong>) from the start (for international characters)</p>
    </div>
 
    <div class="slide">
-      <h1>authors table</h1>
-<pre>CREATE TABLE author<strong>s</strong>(
+      <h1>author table</h1>
+<pre>CREATE TABLE author(
    id   int(8) primary key auto_increment,
    name varchar(255)
 ) engine = <strong>InnoDB</strong> DEFAULT CHARSET=<strong>utf8</strong>;</pre>
    </div>
 
    <div class="slide">
-      <h1>books table</h1>
-<pre>CREATE TABLE books(
+      <h1>book table</h1>
+<pre>CREATE TABLE book(
    id     int(8) primary key auto_increment,
    title  varchar(255),
    author int(8),foreign key (author)
-      references authors(id)
+      references author(id)
 ) engine = InnoDB DEFAULT CHARSET=utf8;</pre>
    </div>
 
@@ -182,12 +181,12 @@
    </div>
 
    <div class="slide">
-      <h1>books table</h1>
-<pre>CREATE TABLE books(
+      <h1>book table</h1>
+<pre>CREATE TABLE book(
    id     int(8) primary key auto_increment,
    title  varchar(255),
    author <strong>int(8)</strong>,<strong>foreign key (<em>author</em>)</strong>
-      <strong>references <em>authors(id)</em></strong>
+      <strong>references <em>author(id)</em></strong>
 ) engine = InnoDB DEFAULT CHARSET=utf8;</pre>
    </div>
 
@@ -208,9 +207,9 @@
    <div class="slide">
       <h1>manual: create</h1>
 <pre>my $sth = $dbh-&gt;prepare('
-   INSERT INTO books
+   INSERT INTO book
    (title, author)
-   values (?,?)
+   VALUES (?,?)
 ');
 
 $sth-&gt;execute(
@@ -221,9 +220,9 @@ $sth-&gt;execute(
    <div class="slide">
       <h1>manual: create</h1>
 <pre>my $sth = $dbh-&gt;prepare('
-   <strong>INSERT INTO books
+   <strong>INSERT INTO book
    (title, author)
-   values (?,?)</strong>
+   VALUES (?,?)</strong>
 ');
 
 $sth-&gt;execute(
@@ -235,9 +234,9 @@ $sth-&gt;execute(
       <h1>manual: retrieve</h1>
 <pre>my $sth = $dbh-&gt;prepare('
    SELECT title,
-   authors.name as author_name
-   FROM books, authors
-   WHERE books.author = authors.id
+   author.name as author_name
+   FROM book, author
+   WHERE book.author = author.id
 ');</pre>
    </div>
 
@@ -255,7 +254,7 @@ $sth-&gt;execute(
    <div class="slide">
       <h1>manual: update</h1>
 <pre>my $update = $dbh-&gt;prepare('
-   UPDATE books
+   UPDATE book
    SET title = ?
    WHERE id = ?
 ');
@@ -268,7 +267,7 @@ $update-&gt;execute(
    <div class="slide">
       <h1>manual: delete</h1>
 <pre>my $delete = $dbh-&gt;prepare('
-   DELETE FROM books
+   DELETE FROM book
    WHERE id = ?
 ');
 
@@ -419,8 +418,8 @@ my @books = $book_model-&gt;search({
 
    <div class="slide">
       <h1>Schema::Loader</h1>
-<pre>Foo::Schema::Result::Authors-&gt;table("authors");
-Foo::Schema::Result::Authors-&gt;add_columns(
+<pre>Foo::Schema::Result::Author-&gt;table("author");
+Foo::Schema::Result::Author-&gt;add_columns(
    id =&gt; {
       data_type     =&gt; "INT",
       default_value =&gt; undef,
@@ -434,13 +433,13 @@ Foo::Schema::Result::Authors-&gt;add_columns(
       size          =&gt; 255,
    },
 );
-Foo::Schema::Result::Authors-&gt;set_primary_key("id");</pre>
+Foo::Schema::Result::Author-&gt;set_primary_key("id");</pre>
    </div>
 
    <div class="slide">
       <h1>Schema::Loader</h1>
-<pre>Foo::Schema::Result::Books->table("books");
-Foo::Schema::Result::Books->add_columns(
+<pre>Foo::Schema::Result::Book->table("book");
+Foo::Schema::Result::Book->add_columns(
    id =&gt; {
       data_type     =&gt; "INT",
       default_value =&gt; undef,
@@ -460,38 +459,38 @@ Foo::Schema::Result::Books->add_columns(
       size          =&gt; 8
    },
 );
-Foo::Schema::Result::Books-&gt;set_primary_key("id");</pre>
+Foo::Schema::Result::Book-&gt;set_primary_key("id");</pre>
    </div>
 
    <div class="slide">
       <h1>Schema::Loader</h1>
-<pre>Foo::Schema::Result::Authors-&gt;has_many(books =&gt; "Foo::Schema::Books",
+<pre>Foo::Schema::Result::Author-&gt;has_many(books =&gt; "Foo::Schema::Book",
    { "foreign.author" =&gt; "self.id" });
 
-Foo::Schema::Result::Books-&gt;belongs_to(author =&gt; "Foo::Schema::Authors",
+Foo::Schema::Result::Book-&gt;belongs_to(author =&gt; "Foo::Schema::Author",
    { id =&gt; "author" });</pre>
    </div>
 
    <div class="slide">
       <h1>SQL - debugging</h1>
-<pre>INSERT INTO authors (name)
+<pre>INSERT INTO author (name)
    VALUES (?): 'Douglas Adams'
 
-INSERT INTO books (author, title)
+INSERT INTO book (author, title)
    VALUES (?, ?): '5', '42'</pre>
    </div>
 
    <div class="slide">
       <h1>overloading</h1>
-<pre>Foo::Schema::Result::Books
-Foo::Schema::ResultSet::Books
-Foo::Schema::Result::Authors
-Foo::Schema::ResultSet::Books</pre>
+<pre>Foo::Schema::Result::Book
+Foo::Schema::ResultSet::Book
+Foo::Schema::Result::Author
+Foo::Schema::ResultSet::Book</pre>
    </div>
 
    <div class="slide">
       <h1>Result::</h1>
-<pre>package Foo::Schema::Result::Books;
+<pre>package Foo::Schema::Result::Book;
 use base 'DBIx::Class';
 use strict;
 use warnings;
@@ -517,7 +516,7 @@ sub isbn {
 
    <div class="slide">
       <h1>Result:: (inflating)</h1>
-<pre>package Foo::Schema::Result::Books;
+<pre>package Foo::Schema::Result::Book;
 use base 'DBIx::Class';
 use strict;
 use warnings;
@@ -535,7 +534,7 @@ __PACKAGE__-&gt;<strong>inflate_column</strong>(
 
    <div class="slide">
       <h1>Result:: (inflating)</h1>
-<pre>package Foo::Schema::Result::Books;
+<pre>package Foo::Schema::Result::Book;
 use base 'DBIx::Class';
 use strict;
 use warnings;
@@ -569,7 +568,7 @@ print $date_published-&gt;month_abbr;</pre>
 
    <div class="slide">
       <h1>ResultSets::</h1>
-<pre>package Foo::Schema::ResultSet::Books;
+<pre>package Foo::Schema::ResultSet::Book;
 use base 'DBIx::Class::ResultSet';
 sub the_ultimate_books {
    my $self = shift;
@@ -585,7 +584,7 @@ sub by_author {
 
    <div class="slide">
       <h1>ResultSets::</h1>
-<pre>package Foo::Schema::<strong>ResultSet::Books</strong>;
+<pre>package Foo::Schema::<strong>ResultSet::Book</strong>;
 use base '<strong>DBIx::Class::ResultSet</strong>';
 sub the_ultimate_books {
    my $self = shift;
@@ -601,7 +600,7 @@ sub by_author {
 
    <div class="slide">
       <h1>ResultSets::</h1>
-<pre>package Foo::Schema::ResultSet::Books;
+<pre>package Foo::Schema::ResultSet::Book;
 use base 'DBIx::Class::ResultSet';
 sub the_ultimate_books {
    my $self = shift;
@@ -618,7 +617,7 @@ sub by_author {
    <div class="slide">
       <h1>ResultSets::</h1>
 <pre>use Foo::Schema;
-my $book_model = Foo::Schema-&gt;resultset('Books');
+my $book_model = Foo::Schema-&gt;resultset('Book');
 my $book_rs    = $book_model-&gt;the_ultimate_books;
 my @books      = $book_rs-&gt;all;</pre>
    </div>
@@ -626,8 +625,8 @@ my @books      = $book_rs-&gt;all;</pre>
    <div class="slide">
       <h1>ResultSets::chaining</h1>
 <pre>use Foo::Schema;
-my $book_model   = Foo::Schema-&gt;resultset('Books');
-my $author_model = Foo::Schema-&gt;resultset('Authors');
+my $book_model   = Foo::Schema-&gt;resultset('Book');
+my $author_model = Foo::Schema-&gt;resultset('Author');
 my $author       = $author_model-&gt;search({ name =&gt; 'Douglas Adams' })-&gt;single;
 my $book_rs      = $book_model-&gt;the_ultimate_books-&gt;by_author($author);
 my @books        = $book_rs-&gt;all;</pre>
@@ -646,7 +645,7 @@ $book_rs = $book_rs-&gt;by_author($author);</pre>
 <pre># Debug (SQL):
 
 # SELECT me.id, me.title, me.date_published, me.author
-#   FROM books me
+#   FROM book me
 #   WHERE ( ( ( author = ? ) AND ( title LIKE ? ) ) ): '5', '%42%'
 #   WHERE ( ( ( author = ? ) AND ( title LIKE ? ) ) ): '5', '%42%'</pre>
    </div>
@@ -669,7 +668,7 @@ my @books = $rs-&gt;all;</pre>
 
    <div class="slide">
       <h1>overloading before new record</h1>
-      <pre>package Foo::Schema::Result::Authors;
+      <pre>package Foo::Schema::Result::Author;
 use base 'DBIx::Class';
 
 sub new {
@@ -691,7 +690,7 @@ sub new {
 
    <div class="slide">
       <h1>a few relationships</h1>
-      (authors -- author_link_to_book -- books)
+      (author -- author_link_to_book -- books)
    </div>
 
    <div class="slide">
@@ -705,11 +704,11 @@ sub new {
   id      int(8)    primary key auto_increment,
   book    int(8),
   author  int(8),
-  foreign key (book)     references books(id),
-  foreign key (author)   references authors(id)
+  foreign key (book)     references book(id),
+  foreign key (author)   references author(id)
 ) engine = InnoDB DEFAULT CHARSET=utf8;
 
-ALTER TABLE `books` DROP `author`</pre>
+ALTER TABLE `book` DROP `author`</pre>
    </div>
 
    <div class="slide">
@@ -718,11 +717,11 @@ ALTER TABLE `books` DROP `author`</pre>
   id      int(8)    primary key auto_increment,
   book    int(8),
   author  int(8),
-  <strong>foreign key (book)     references books(id),
-  foreign key (author)   references authors(id)</strong>
+  <strong>foreign key (book)     references book(id),
+  foreign key (author)   references author(id)</strong>
 ) engine = InnoDB DEFAULT CHARSET=utf8;
 
-ALTER TABLE `books` DROP `author`</pre>
+ALTER TABLE `book` DROP `author`</pre>
    </div>
 
    <div class="slide">
@@ -731,7 +730,7 @@ ALTER TABLE `books` DROP `author`</pre>
 
    <div class="slide">
       <h1>has_many</h1>
-<pre>package Foo::Schema::<strong>Result::Books</strong>;
+<pre>package Foo::Schema::<strong>Result::Book</strong>;
 
 __PACKAGE__-&gt;has_many( author_and_books =&gt; "Foo::Schema::Result::AuthorAndBooks",
     { "foreign.book" =&gt; "self.id" },
@@ -742,7 +741,7 @@ __PACKAGE__-&gt;has_many( author_and_books =&gt; "Foo::Schema::Result::AuthorAnd
 
    <div class="slide">
       <h1>has_many</h1>
-<pre>package Foo::Schema::<strong>Result::Books</strong>;
+<pre>package Foo::Schema::<strong>Result::Book</strong>;
 
 __PACKAGE__-&gt;has_many(
 author_and_books =&gt; <strong># name of accessor</strong>
@@ -763,7 +762,7 @@ author_and_books =&gt; <strong># name of accessor</strong>
 
 __PACKAGE__-&gt;belongs_to(
    book =&gt; <strong># Accessor name</strong>
-   "Foo::Schema::Result::Books", <strong># Related class</strong>
+   "Foo::Schema::Result::Book", <strong># Related class</strong>
    { id =&gt; "book" } <strong># relationship</strong>
 );
 </pre>
@@ -783,7 +782,7 @@ __PACKAGE__-&gt;belongs_to(
 
    <div class="slide">
       <h1>many_to_many</h1>
-      <pre>package Foo::Schema::<strong>Result::Books</strong>;
+      <pre>package Foo::Schema::<strong>Result::Book</strong>;
 use base 'DBIx::Class';
 
 __PACKAGE__-&gt;many_to_many(
@@ -797,7 +796,7 @@ __PACKAGE__-&gt;many_to_many(
 
    <div class="slide">
       <h1>many_to_many</h1>
-      <pre>package Foo::Schema::<strong>Result::Books</strong>;
+      <pre>package Foo::Schema::<strong>Result::Book</strong>;
 use base 'DBIx::Class';
 
 __PACKAGE__-&gt;many_to_many(
@@ -811,7 +810,7 @@ __PACKAGE__-&gt;many_to_many(
 
    <div class="slide">
       <h1>many_to_many</h1>
-      <pre>package Foo::Schema::Result::Authors;
+      <pre>package Foo::Schema::Result::Author;
 use base 'DBIx::Class';
 
 __PACKAGE__-&gt;many_to_many(
@@ -831,7 +830,7 @@ __PACKAGE__-&gt;many_to_many(
 
 use Foo::Schema;
 
-my $author_model = Foo::Schema-&gt;resultset('Authors');
+my $author_model = Foo::Schema-&gt;resultset('Author');
 my $author       = $author_model-&gt;search({
    name =&gt; 'Douglas Adams',
 })-&gt;single;
@@ -849,9 +848,9 @@ $author-&gt;add_to_books({
    title =&gt; 'A new book',
 });</strong>
 
-# SELECT me.id, me.name FROM authors me
+# SELECT me.id, me.name FROM author me
 #     WHERE ( name = ? ): 'Douglas Adams';
-# INSERT INTO books (title) VALUES (?): 'A new book';
+# INSERT INTO book (title) VALUES (?): 'A new book';
 # INSERT INTO author_and_books (author, book)
 #     VALUES (?, ?): '5', '2';</pre>
    </div>
@@ -875,12 +874,12 @@ $book-&gt;add_to_authors($author_2);</pre>
 
    <div class="slide">
       <h1>error messages</h1>
-      <pre>DBIx::Class::Schema::Loader::connection(): Failed to load external class definition for 'Foo::Schema::Result::Authors': Can't locate object method "many_to_many" via package "Foo::Schema::Result::Author" at lib/Foo/Schema/Result/Authors.pm line 9.Compilation failed in require at /Library/Perl/5.8.8/DBIx/Class/Schema/Loader/Base.pm line 292.</pre>
+      <pre>DBIx::Class::Schema::Loader::connection(): Failed to load external class definition for 'Foo::Schema::Result::Author': Can't locate object method "many_to_many" via package "Foo::Schema::Result::Author" at lib/Foo/Schema/Result/Author.pm line 9.Compilation failed in require at /Library/Perl/5.8.8/DBIx/Class/Schema/Loader/Base.pm line 292.</pre>
    </div>
 
    <div class="slide">
       <h1>error messages</h1>
-   <pre>DBIx::Class::Schema::Loader::connection(): Failed to load external class definition for 'Foo::Schema::Result::Authors': Can't locate object method "many_to_many" via package "Foo::Schema::<strong>Result::Author</strong>" at lib/Foo/Schema/<strong>Result/Authors.pm</strong> line 9.Compilation failed in require at /Library/Perl/5.8.8/DBIx/Class/Schema/Loader/Base.pm line 292.</pre>
+   <pre>DBIx::Class::Schema::Loader::connection(): Failed to load external class definition for 'Foo::Schema::Result::Author': Can't locate object method "many_to_many" via package "Foo::Schema::<strong>Result::Author</strong>" at lib/Foo/Schema/<strong>Result/Author.pm</strong> line 9.Compilation failed in require at /Library/Perl/5.8.8/DBIx/Class/Schema/Loader/Base.pm line 292.</pre>
    </div>
 
    <div class="slide">
@@ -930,7 +929,7 @@ __PACKAGE__-&gt;config(
   my ($self, $c) = @_;
 
   my $model = $c-&gt;model('Schema::Foo');
-  my $author_model = $model-&gt;resultset('Authors');
+  my $author_model = $model-&gt;resultset('Author');
 
 }
 
